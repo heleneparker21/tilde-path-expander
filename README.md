@@ -30,3 +30,10 @@ This library makes one explicit trade-off: collapsing is purely lexical and alwa
 - `collapse_path("")` returns `""`, not `"."`. An empty path is degenerate; inventing a `.` would add content the caller did not supply. A path that collapses to nothing (e.g. `"a/.."`) does return `"."`, because that is the only usable filesystem path.
 - For absolute paths, `..` that would climb above the root is clamped: `collapse_path("/..")` returns `"/"`. For relative paths, leading `..` components are preserved because they are the only signal about the intended directory level.
 - Trailing slashes are stripped (`"a/b/"` -> `"a/b"`), except for the root itself (`"/"` stays `"/"`).
+
+## Performance
+
+The window keeps a bounded buffer, so `push` is constant time and memory does not
+grow with the length of the stream. `peak` and `trough` are linear in the window
+size, which is the trade that keeps `push` cheap.
+
